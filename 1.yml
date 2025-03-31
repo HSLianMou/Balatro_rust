@@ -1,0 +1,10 @@
+cards_played: [10♠, 10♠, J♠, 5♥, 5♠]
+
+cards_held_in_hand: [10♠, 10♠, 10♠, 10♠, 10♠]
+
+jokers:
+  - Wrathful Joker
+  - Wrathful Joker
+  - Wrathful Joker
+  - Wrathful Joker
+  - Wrathful Joker
