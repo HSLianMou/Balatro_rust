@@ -1,6 +1,6 @@
 use ortalib::{Card, PokerHand, Rank};
-use std::vec;
 use std::collections::{HashMap, HashSet};
+use std::vec;
 
 #[derive(Debug)]
 pub struct HandValue {
@@ -23,7 +23,7 @@ impl HandValue {
             Self::check_two_pair,
             Self::check_pair,
         ];
-        
+
         for checkcard in check {
             if let Some(eval) = checkcard(cards) {
                 return eval;
@@ -32,7 +32,6 @@ impl HandValue {
 
         Self::check_high_card(cards).unwrap()
     }
-
 
     fn is_flush(cards: &[Card]) -> bool {
         cards.len() == 5 && {
@@ -64,7 +63,10 @@ impl HandValue {
             return false;
         }
 
-        let nums: Vec<u8> = cards.iter().map(|c| Self::rank_to_numeric(&c.rank)).collect();
+        let nums: Vec<u8> = cards
+            .iter()
+            .map(|c| Self::rank_to_numeric(&c.rank))
+            .collect();
 
         let unique_nums: HashSet<u8> = nums.iter().cloned().collect();
         if unique_nums.len() != 5 {
@@ -80,14 +82,11 @@ impl HandValue {
 
         is_normal || is_special
     }
-    
 
     fn group_by_rank(cards: &[Card]) -> HashMap<Rank, Vec<Card>> {
         let mut groups: HashMap<Rank, Vec<Card>> = HashMap::new();
         for &card in cards {
-            groups.entry(card.rank)
-                .or_default()
-                .push(card);
+            groups.entry(card.rank).or_default().push(card);
         }
         groups
     }
@@ -99,7 +98,7 @@ impl HandValue {
                 hand: PokerHand::FlushFive,
                 cards_impl: cards.to_vec(),
             })
-        }  else {
+        } else {
             None
         }
     }
@@ -111,10 +110,10 @@ impl HandValue {
             counts.sort();
 
             if counts == vec![2, 3] {
-                 return Some(Self {
+                return Some(Self {
                     hand: PokerHand::FlushHouse,
                     cards_impl: cards.to_vec(),
-                })
+                });
             } else {
                 return None;
             }
@@ -132,13 +131,12 @@ impl HandValue {
                 hand: PokerHand::FiveOfAKind,
                 cards_impl: cards.to_vec(),
             })
-
         } else {
             None
         }
     }
 
-    fn check_straight_flush(cards: &[Card]) ->Option<Self> {
+    fn check_straight_flush(cards: &[Card]) -> Option<Self> {
         if Self::is_flush(cards) && Self::is_straight(cards) {
             Some(Self {
                 hand: PokerHand::StraightFlush,
@@ -157,24 +155,31 @@ impl HandValue {
         let mut counts: Vec<usize> = groups.values().map(|v| v.len()).collect();
         counts.sort();
 
-        if counts == vec![1, 4] {
+        if counts.last() == Some(&4) {
+            let four_rank = groups
+                .iter()
+                .find(|(_, v)| v.len() == 4)
+                .map(|(k, _)| *k)
+                .expect("find_error");
+            let four_cards = groups.get(&four_rank).unwrap().clone();
+
             Some(Self {
                 hand: PokerHand::FourOfAKind,
-                cards_impl: cards.to_vec(),
+                cards_impl: four_cards,
             })
         } else {
             None
         }
     }
-    
-    fn check_full_house(cards: &[Card]) ->Option<Self> {
+
+    fn check_full_house(cards: &[Card]) -> Option<Self> {
         if cards.len() != 5 {
             return None;
         }
         let groups = Self::group_by_rank(cards);
         let mut counts: Vec<usize> = groups.values().map(|v| v.len()).collect();
         counts.sort();
-        
+
         if counts == vec![2, 3] {
             Some(Self {
                 hand: PokerHand::FullHouse,
@@ -189,7 +194,7 @@ impl HandValue {
         if Self::is_flush(cards) {
             Some(Self {
                 hand: PokerHand::Flush,
-                cards_impl: cards.to_vec()
+                cards_impl: cards.to_vec(),
             })
         } else {
             None
@@ -216,9 +221,16 @@ impl HandValue {
         counts.sort();
 
         if counts.last() == Some(&3) {
+            let three_rank = groups
+                .iter()
+                .find(|(_, v)| v.len() == 3)
+                .map(|(k, _)| *k)
+                .expect("find error");
+            let three_cards = groups.get(&three_rank).unwrap().clone();
+
             Some(Self {
                 hand: PokerHand::ThreeOfAKind,
-                cards_impl: cards.to_vec(),
+                cards_impl: three_cards,
             })
         } else {
             None
@@ -227,56 +239,67 @@ impl HandValue {
 
     fn check_two_pair(cards: &[Card]) -> Option<Self> {
         if cards.len() < 4 {
-            return None
+            return None;
         }
         let groups = Self::group_by_rank(cards);
         let mut counts: Vec<usize> = groups.values().map(|v| v.len()).collect();
         counts.sort();
 
         if counts.iter().filter(|&&c| c == 2).count() == 2 {
+            let two_pairs: Vec<Card> = groups
+                .values()
+                .filter(|v| v.len() == 2)
+                .take(2)
+                .flat_map(|v| v.clone())
+                .collect();
+
             Some(Self {
                 hand: PokerHand::TwoPair,
-                cards_impl: cards.to_vec(),
+                cards_impl: two_pairs,
             })
         } else {
             None
         }
     }
 
-    fn check_pair(cards: &[Card]) ->Option<Self> {
+    fn check_pair(cards: &[Card]) -> Option<Self> {
         if cards.len() < 2 {
-            return None
+            return None;
         }
         let groups = Self::group_by_rank(cards);
         let mut counts: Vec<usize> = groups.values().map(|v| v.len()).collect();
         counts.sort();
 
-        if counts.iter().filter(|&&c| c == 2).count() == 1 {
+        if counts.last() == Some(&2) {
+            let pair = groups
+                .iter()
+                .find(|(_, v)| v.len() == 2)
+                .map(|(k, _)| *k)
+                .expect("find error");
+            let pair = groups.get(&pair).unwrap().clone();
+
             Some(Self {
                 hand: PokerHand::Pair,
-                cards_impl: cards.to_vec(),
+                cards_impl: pair,
             })
         } else {
             None
         }
     }
     fn check_high_card(cards: &[Card]) -> Option<Self> {
-        let card_len: usize = cards.len();
         let groups = Self::group_by_rank(cards);
         let mut counts: Vec<usize> = groups.values().map(|v| v.len()).collect();
         counts.sort();
-        if counts.len() == card_len {
+
+        if counts.iter().all(|&c| c == 1) {
+            let max_card = cards.iter().max_by_key(|c| c.rank).cloned().unwrap();
+
             Some(Self {
                 hand: PokerHand::HighCard,
-                cards_impl: cards.to_vec(),
+                cards_impl: vec![max_card],
             })
         } else {
             None
         }
     }
-    
 }
-
-
-
-

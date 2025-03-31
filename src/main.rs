@@ -5,10 +5,10 @@ use std::{
     path::{Path, PathBuf},
 };
 
-mod pokerhand;
+mod models;
+use crate::models::pokerhand::HandValue;
 use clap::Parser;
 use ortalib::{Chips, Mult, Round};
-use pokerhand::HandValue;
 
 #[derive(Parser)]
 struct Opts {
@@ -44,5 +44,5 @@ fn score(round: Round) -> (Chips, Mult) {
     println!("{:?}", round);
     let hand = HandValue::evaluation(&round.cards_played);
     println!("{:?}", &hand);
-    return(10.0, 20.0)
+    return (10.0, 20.0);
 }
