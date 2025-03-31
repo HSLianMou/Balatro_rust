@@ -7,6 +7,7 @@ use std::{
 
 mod models;
 use crate::models::pokerhand::HandValue;
+use crate::models::sorce::Sorce;
 use clap::Parser;
 use ortalib::{Chips, Mult, Round};
 
@@ -44,5 +45,7 @@ fn score(round: Round) -> (Chips, Mult) {
     println!("{:?}", round);
     let hand = HandValue::evaluation(&round.cards_played);
     println!("{:?}", &hand);
-    return (10.0, 20.0);
+    let sorce = Sorce::get_card(hand);
+    println!("{:?}", sorce);
+    return (sorce.total_chips, sorce.mult);
 }
