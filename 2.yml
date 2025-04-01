@@ -1,14 +1,12 @@
 cards_played:
   - A♥
-  - A♥
-  - A♥
+  - A♥ Holographic
+  - A♥ Polychrome
   - A♥
   - 10♥
 
 cards_held_in_hand:
-  - K♠ Steel Foil
+
 
 jokers:
-  - Joker Foil
-  - Jolly Joker Holographic
-  - Zany Joker Polychrome
+  - Droll Joker Holographic

@@ -106,13 +106,13 @@ impl Sorce {
             if let Some(editions) = hold_joker_card.edition {
                 match editions {
                     Edition::Foil => {
-                        total_chips += 50.0
+                        total_chips += 50.0;
                     }
                     Edition::Holographic => {
-                        mult += 10.0
+                        mult += 10.0;
                     }
                     Edition::Polychrome => {
-                        mult *= 1.5;
+                        mult *= 1.5
                     }
                 }
             }
