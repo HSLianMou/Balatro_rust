@@ -42,8 +42,11 @@ impl HandValue {
 
     pub fn is_flush(cards: &[Card]) -> bool {
         let (normal_card, wild_card): (Vec<&Card>, Vec<&Card>) = cards
-        .iter()
-        .partition(|c| !matches!(c.enhancement, Some(Enhancement::Wild)));
+            .iter()
+            .partition(|c| !matches!(c.enhancement, Some(Enhancement::Wild)));
+        if wild_card.len() == 5 {
+            return true;
+        }
         if wild_card.is_empty() {
             let base_suit = cards[0].suit;
             cards.iter().all(|c| c.suit == base_suit);

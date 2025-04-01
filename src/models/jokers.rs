@@ -1,19 +1,18 @@
 use std::vec;
 
-use ortalib::{Card, Joker, JokerCard, PokerHand};
 use crate::HandValue;
+use ortalib::{Card, Joker, JokerCard, PokerHand};
 
 #[derive(Debug)]
-pub struct HandJoker{
+pub struct HandJoker {
     pub hand: PokerHand,
     pub cards_impl: Vec<Card>,
     pub cards_hold_in_hand: Vec<Card>,
+    pub joker_card: Vec<JokerCard>,
     pub work_joker_cards_in_hand: Vec<JokerCard>,
     pub total_joker_number: usize,
     counts: Vec<usize>,
 }
-
-
 
 impl HandJoker {
     pub fn analyze(handvalue: &HandValue) -> Self {
@@ -25,12 +24,14 @@ impl HandJoker {
             hand: handvalue.hand.clone(),
             cards_impl: handvalue.cards_impl.clone(),
             cards_hold_in_hand: handvalue.cards_hold_in_hand.clone(),
+            joker_card: handvalue.joker_cards.clone(),
             work_joker_cards_in_hand: Vec::new(),
             total_joker_number: 0,
             counts,
         };
 
-        let work_joker = handvalue.joker_cards
+        let work_joker = handvalue
+            .joker_cards
             .iter()
             .filter(|j| Self::is_joker_work(&j.joker, &origin_data))
             .cloned()
@@ -43,21 +44,25 @@ impl HandJoker {
         }
     }
 
-
     fn is_joker_work(joker: &Joker, data: &Self) -> bool {
         match joker {
-            Joker::Joker | Joker::AbstractJoker => {
-                true
-            }
+            Joker::Joker | Joker::AbstractJoker => true,
             Joker::JollyJoker | Joker::SlyJoker => {
-                if data.counts.last() == Some(&5)|| data.counts.last() == Some(&4) || data.counts.last() == Some(&3) || data.counts.last() == Some(&2) {
+                if data.counts.last() == Some(&5)
+                    || data.counts.last() == Some(&4)
+                    || data.counts.last() == Some(&3)
+                    || data.counts.last() == Some(&2)
+                {
                     true
                 } else {
                     false
                 }
             }
             Joker::ZanyJoker | Joker::WilyJoker => {
-                if data.counts.last() == Some(&5)|| data.counts.last() == Some(&4) || data.counts.last() == Some(&3) {
+                if data.counts.last() == Some(&5)
+                    || data.counts.last() == Some(&4)
+                    || data.counts.last() == Some(&3)
+                {
                     true
                 } else {
                     false
@@ -79,15 +84,9 @@ impl HandJoker {
             }
             Joker::DrollJoker | Joker::CraftyJoker => {
                 let groups = HandValue::is_flush(&data.cards_impl);
-                if groups {
-                    true
-                } else {
-                    false
-                }
+                if groups { true } else { false }
             }
-            _ => {
-                false
-            }
+            _ => false,
         }
     }
 }

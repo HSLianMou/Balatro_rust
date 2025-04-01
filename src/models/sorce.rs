@@ -29,7 +29,7 @@ impl Sorce {
                         mult *= 2.0;
                         total_chips += rank_value;
                     }
-                    _  => {
+                    _ => {
                         total_chips += rank_value;
                     }
                 }
@@ -45,9 +45,7 @@ impl Sorce {
                     Edition::Holographic => {
                         mult += 10.0;
                     }
-                    Edition::Polychrome => {
-                        mult *= 1.5
-                    }
+                    Edition::Polychrome => mult *= 1.5,
                 }
             }
         }
@@ -66,43 +64,21 @@ impl Sorce {
                 Joker::Joker => {
                     mult += 4.0;
                 }
-                Joker::JollyJoker => {
-                    mult += 8.0
-                }
-                Joker::ZanyJoker => {
-                    mult += 12.0
-                }
-                Joker::MadJoker => {
-                    mult += 10.0
-                }
-                Joker::CrazyJoker => {
-                    mult += 12.0
-                }
-                Joker::DrollJoker => {
-                    mult += 10.0
-                }
-                Joker::SlyJoker => {
-                    total_chips += 50.0
-                }
-                Joker::WilyJoker => {
-                    total_chips += 100.0
-                }
-                Joker::CleverJoker => {
-                    total_chips += 80.0
-                }
-                Joker::DeviousJoker => {
-                    total_chips += 100.0
-                }
-                Joker::CraftyJoker => {
-                    total_chips += 80.0
-                }
-                Joker::AbstractJoker =>{
-                    mult += 3.0 * (hand.total_joker_number as f64)
-                }
+                Joker::JollyJoker => mult += 8.0,
+                Joker::ZanyJoker => mult += 12.0,
+                Joker::MadJoker => mult += 10.0,
+                Joker::CrazyJoker => mult += 12.0,
+                Joker::DrollJoker => mult += 10.0,
+                Joker::SlyJoker => total_chips += 50.0,
+                Joker::WilyJoker => total_chips += 100.0,
+                Joker::CleverJoker => total_chips += 80.0,
+                Joker::DeviousJoker => total_chips += 100.0,
+                Joker::CraftyJoker => total_chips += 80.0,
+                Joker::AbstractJoker => mult += 3.0 * (hand.total_joker_number as f64),
                 _ => {}
             }
         }
-        for hold_joker_card in &hand.work_joker_cards_in_hand {
+        for hold_joker_card in &hand.joker_card {
             if let Some(editions) = hold_joker_card.edition {
                 match editions {
                     Edition::Foil => {
@@ -111,9 +87,7 @@ impl Sorce {
                     Edition::Holographic => {
                         mult += 10.0;
                     }
-                    Edition::Polychrome => {
-                        mult *= 1.5
-                    }
+                    Edition::Polychrome => mult *= 1.5,
                 }
             }
         }
