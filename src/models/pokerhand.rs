@@ -1,4 +1,4 @@
-use ortalib::{Card, Enhancement, PokerHand, Rank};
+use ortalib::{Card, Enhancement, JokerCard, PokerHand, Rank};
 use std::collections::{HashMap, HashSet};
 use std::vec;
 
@@ -7,10 +7,11 @@ pub struct HandValue {
     pub hand: PokerHand,
     pub cards_impl: Vec<Card>,
     pub cards_hold_in_hand: Vec<Card>,
+    pub joker_cards: Vec<JokerCard>,
 }
 
 impl HandValue {
-    pub fn evaluation(cards: &[Card], hold_cards: &[Card]) -> Self {
+    pub fn evaluation(cards: &[Card], hold_cards: &[Card], joker_card: &[JokerCard]) -> Self {
         let check: Vec<fn(&[Card]) -> Option<Self>> = vec![
             Self::check_flush_five,
             Self::check_flush_house,
@@ -28,20 +29,18 @@ impl HandValue {
         for checkcard in &check {
             if let Some(mut eval) = checkcard(cards) {
                 eval.cards_hold_in_hand = hold_cards.to_vec();
+                eval.joker_cards = joker_card.to_vec();
                 return eval;
             }
         }
 
         let mut default_eval = Self::check_high_card(cards).unwrap();
         default_eval.cards_hold_in_hand = hold_cards.to_vec();
+        default_eval.joker_cards = joker_card.to_vec();
         default_eval
     }
 
     fn is_flush(cards: &[Card]) -> bool {
-        // cards.len() == 5 && {
-        //     let base_suit = cards[0].suit;
-        //     cards.iter().all(|c| c.suit == base_suit)
-        // }
         let (normal_card, wild_card): (Vec<&Card>, Vec<&Card>) = cards
         .iter()
         .partition(|c| !matches!(c.enhancement, Some(Enhancement::Wild)));
@@ -100,7 +99,7 @@ impl HandValue {
         is_normal || is_special
     }
 
-    fn group_by_rank(cards: &[Card]) -> HashMap<Rank, Vec<Card>> {
+    pub fn group_by_rank(cards: &[Card]) -> HashMap<Rank, Vec<Card>> {
         let mut groups: HashMap<Rank, Vec<Card>> = HashMap::new();
         for &card in cards {
             groups.entry(card.rank).or_default().push(card);
@@ -115,6 +114,7 @@ impl HandValue {
                 hand: PokerHand::FlushFive,
                 cards_impl: cards.to_vec(),
                 cards_hold_in_hand: Vec::new(),
+                joker_cards: Vec::new(),
             })
         } else {
             None
@@ -132,6 +132,7 @@ impl HandValue {
                     hand: PokerHand::FlushHouse,
                     cards_impl: cards.to_vec(),
                     cards_hold_in_hand: Vec::new(),
+                    joker_cards: Vec::new(),
                 });
             } else {
                 return None;
@@ -150,6 +151,7 @@ impl HandValue {
                 hand: PokerHand::FiveOfAKind,
                 cards_impl: cards.to_vec(),
                 cards_hold_in_hand: Vec::new(),
+                joker_cards: Vec::new(),
             })
         } else {
             None
@@ -162,6 +164,7 @@ impl HandValue {
                 hand: PokerHand::StraightFlush,
                 cards_impl: cards.to_vec(),
                 cards_hold_in_hand: Vec::new(),
+                joker_cards: Vec::new(),
             })
         } else {
             None
@@ -188,6 +191,7 @@ impl HandValue {
                 hand: PokerHand::FourOfAKind,
                 cards_impl: four_cards,
                 cards_hold_in_hand: Vec::new(),
+                joker_cards: Vec::new(),
             })
         } else {
             None
@@ -207,6 +211,7 @@ impl HandValue {
                 hand: PokerHand::FullHouse,
                 cards_impl: cards.to_vec(),
                 cards_hold_in_hand: Vec::new(),
+                joker_cards: Vec::new(),
             })
         } else {
             None
@@ -219,6 +224,7 @@ impl HandValue {
                 hand: PokerHand::Flush,
                 cards_impl: cards.to_vec(),
                 cards_hold_in_hand: Vec::new(),
+                joker_cards: Vec::new(),
             })
         } else {
             None
@@ -231,6 +237,7 @@ impl HandValue {
                 hand: PokerHand::Straight,
                 cards_impl: cards.to_vec(),
                 cards_hold_in_hand: Vec::new(),
+                joker_cards: Vec::new(),
             })
         } else {
             None
@@ -257,6 +264,7 @@ impl HandValue {
                 hand: PokerHand::ThreeOfAKind,
                 cards_impl: three_cards,
                 cards_hold_in_hand: Vec::new(),
+                joker_cards: Vec::new(),
             })
         } else {
             None
@@ -283,6 +291,7 @@ impl HandValue {
                 hand: PokerHand::TwoPair,
                 cards_impl: two_pairs,
                 cards_hold_in_hand: Vec::new(),
+                joker_cards: Vec::new(),
             })
         } else {
             None
@@ -309,6 +318,7 @@ impl HandValue {
                 hand: PokerHand::Pair,
                 cards_impl: pair,
                 cards_hold_in_hand: Vec::new(),
+                joker_cards: Vec::new(),
             })
         } else {
             None
@@ -326,6 +336,7 @@ impl HandValue {
                 hand: PokerHand::HighCard,
                 cards_impl: vec![max_card],
                 cards_hold_in_hand: Vec::new(),
+                joker_cards: Vec::new(),
             })
         } else {
             None

@@ -8,8 +8,8 @@ cards_played:
 cards_held_in_hand: [10♠, 10♠, 10♠, 10♠, 10♠]
 
 jokers:
+  - Joker
   - Wrathful Joker
   - Wrathful Joker
   - Wrathful Joker
-  - Wrathful Joker
-  - Wrathful Joker
+  - Abstract Joker

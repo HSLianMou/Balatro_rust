@@ -8,6 +8,7 @@ use std::{
 mod models;
 use crate::models::pokerhand::HandValue;
 use crate::models::sorce::Sorce;
+use crate::models::jokers;
 use clap::Parser;
 use ortalib::{Chips, Mult, Round};
 
@@ -42,10 +43,10 @@ fn parse_round(opts: &Opts) -> Result<Round, Box<dyn Error>> {
 }
 
 fn score(round: Round) -> (Chips, Mult) {
-    println!("{:?}", round);
-    let hand = HandValue::evaluation(&round.cards_played, &round.cards_held_in_hand);
-    println!("{:?}", &hand);
-    println!("{:?}", &hand.cards_impl);
+    // println!("{:?}", round);
+    let hand = HandValue::evaluation(&round.cards_played, &round.cards_held_in_hand, &round.jokers);
+    // println!("{:?}", &hand);
+    // println!("{:?}", &hand.cards_impl);
     // for card in &hand.cards_impl {
     //     let enh = card.enhancement.as_ref().map(|e| format!("{:?}", e)).unwrap_or_default();
     //     let edi = card.edition.as_ref().map(|e| format!("{:?}", e)).unwrap_or_default();
@@ -55,7 +56,9 @@ fn score(round: Round) -> (Chips, Mult) {
     //     };
     //     println!("{}", output);
     // }
-    let sorce = Sorce::get_card(hand);
-    println!("chips: {:?}, mult: {:?}", sorce.total_chips, sorce.mult);
+    let new_hand = jokers::HandJoker::analyze(&hand);
+    // println!("{:?}", new_hand);
+    let sorce = Sorce::get_card(new_hand);
+    // println!("chips: {:?}, mult: {:?}", sorce.total_chips, sorce.mult);
     return (sorce.total_chips, sorce.mult);
 }
