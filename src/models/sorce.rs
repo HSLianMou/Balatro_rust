@@ -97,7 +97,7 @@ impl Sorce {
                     total_chips += 80.0
                 }
                 Joker::AbstractJoker =>{
-                    mult = mult * 3.0 * (hand.total_joker_number as f64)
+                    mult += 3.0 * (hand.total_joker_number as f64)
                 }
                 _ => {}
             }
