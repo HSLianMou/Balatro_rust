@@ -44,8 +44,18 @@ fn parse_round(opts: &Opts) -> Result<Round, Box<dyn Error>> {
 fn score(round: Round) -> (Chips, Mult) {
     println!("{:?}", round);
     let hand = HandValue::evaluation(&round.cards_played);
-    println!("{:?}", &hand);
+    // println!("{:?}", &hand);
+    println!("{:?}", &hand.cards_impl);
+    for card in &hand.cards_impl {
+        let enh = card.enhancement.as_ref().map(|e| format!("{:?}", e)).unwrap_or_default();
+        let edi = card.edition.as_ref().map(|e| format!("{:?}", e)).unwrap_or_default();
+        let output = match (enh.is_empty(), edi.is_empty()) {
+            (true, true) => "None".to_string(),
+            _ => [enh, edi].join(" ").trim().to_string(),
+        };
+        println!("{}", output);
+    }
     let sorce = Sorce::get_card(hand);
-    println!("{:?}", sorce);
+    // println!("{:?}", sorce);
     return (sorce.total_chips, sorce.mult);
 }
