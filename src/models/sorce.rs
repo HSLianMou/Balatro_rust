@@ -1,5 +1,5 @@
 use super::pokerhand::HandValue;
-use ortalib::{Card, Chips, Edition, Enhancement, Mult, PokerHand};
+use ortalib::{Chips, Edition, Enhancement, Mult, PokerHand};
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Sorce {
@@ -12,11 +12,10 @@ impl Sorce {
     pub fn get_card(hand: HandValue) -> Self {
         let (card_chips, mut mult) = PokerHand::hand_value(&hand.hand);
         let mut total_chips: f64 = 0.0;
+        total_chips += card_chips;
 
         for card in &hand.cards_impl {
             let rank_value = card.rank.rank_value();
-            total_chips += card_chips;
-
             if let Some(enhancement) = card.enhancement {
                 match enhancement {
                     Enhancement::Bonus => {
