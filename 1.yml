@@ -1,15 +1,7 @@
 cards_played: 
   - A♥ 
-  - A♠ 
-  - Q♦
-  - J♣
-  - J♥
 
-cards_held_in_hand: [10♠, 10♠, 10♠, 10♠, 10♠]
+cards_held_in_hand: [K♠, 10♠, 10♠, 10♠, 10♠]
 
 jokers:
-  - Joker Foil
-  - Mad Joker
-  - Wrathful Joker
-  - Wrathful Joker
-  - Abstract Joker
+  - Baron

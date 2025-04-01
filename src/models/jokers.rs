@@ -86,7 +86,7 @@ impl HandJoker {
                 let groups = HandValue::is_flush(&data.cards_impl);
                 if groups { true } else { false }
             }
-            _ => false,
+            _ => true,
         }
     }
 }

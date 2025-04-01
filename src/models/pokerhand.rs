@@ -81,7 +81,6 @@ impl HandValue {
         if cards.len() != 5 {
             return false;
         }
-
         let nums: Vec<u8> = cards
             .iter()
             .map(|c| Self::rank_to_numeric(&c.rank))
@@ -111,6 +110,9 @@ impl HandValue {
     }
 
     fn check_flush_five(cards: &[Card]) -> Option<Self> {
+        if cards.len() != 5 {
+            return None;
+        }
         let base_rank = cards[0].rank;
         if Self::is_flush(cards) && cards.iter().all(|c| c.rank == base_rank) {
             Some(Self {
@@ -125,6 +127,9 @@ impl HandValue {
     }
 
     fn check_flush_house(cards: &[Card]) -> Option<Self> {
+        if cards.len() != 5 {
+            return None;
+        }
         if Self::is_flush(cards) {
             let groups = Self::group_by_rank(cards);
             let mut counts: Vec<usize> = groups.values().map(|v| v.len()).collect();
@@ -222,6 +227,9 @@ impl HandValue {
     }
 
     fn check_flush(cards: &[Card]) -> Option<Self> {
+        if cards.len() != 5 {
+            return None;
+        }
         if Self::is_flush(cards) {
             Some(Self {
                 hand: PokerHand::Flush,
@@ -235,6 +243,9 @@ impl HandValue {
     }
 
     fn check_straight(cards: &[Card]) -> Option<Self> {
+        if cards.len() != 5 {
+            return None;
+        }
         if Self::is_straight(cards) {
             Some(Self {
                 hand: PokerHand::Straight,
