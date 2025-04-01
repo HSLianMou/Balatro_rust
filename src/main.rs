@@ -59,6 +59,6 @@ fn score(round: Round) -> (Chips, Mult) {
     let new_hand = jokers::HandJoker::analyze(&hand);
     // println!("{:?}", new_hand);
     let sorce = Sorce::get_card(new_hand);
-    println!("chips: {:?}, mult: {:?}", sorce.total_chips, sorce.mult);
+    // println!("chips: {:?}, mult: {:?}", sorce.total_chips, sorce.mult);
     return (sorce.total_chips, sorce.mult);
 }

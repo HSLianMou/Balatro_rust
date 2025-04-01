@@ -40,7 +40,7 @@ impl HandValue {
         default_eval
     }
 
-    fn is_flush(cards: &[Card]) -> bool {
+    pub fn is_flush(cards: &[Card]) -> bool {
         let (normal_card, wild_card): (Vec<&Card>, Vec<&Card>) = cards
         .iter()
         .partition(|c| !matches!(c.enhancement, Some(Enhancement::Wild)));

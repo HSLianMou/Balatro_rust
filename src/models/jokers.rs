@@ -10,18 +10,24 @@ pub struct HandJoker{
     pub cards_hold_in_hand: Vec<Card>,
     pub work_joker_cards_in_hand: Vec<JokerCard>,
     pub total_joker_number: usize,
+    counts: Vec<usize>,
 }
 
 
 
 impl HandJoker {
     pub fn analyze(handvalue: &HandValue) -> Self {
+        let groups = HandValue::group_by_rank(&handvalue.cards_impl);
+        let mut counts: Vec<_> = groups.values().map(|v| v.len()).collect();
+        counts.sort();
+
         let origin_data = Self {
             hand: handvalue.hand.clone(),
             cards_impl: handvalue.cards_impl.clone(),
             cards_hold_in_hand: handvalue.cards_hold_in_hand.clone(),
             work_joker_cards_in_hand: Vec::new(),
             total_joker_number: 0,
+            counts,
         };
 
         let work_joker = handvalue.joker_cards
@@ -40,105 +46,44 @@ impl HandJoker {
 
     fn is_joker_work(joker: &Joker, data: &Self) -> bool {
         match joker {
-            Joker::Joker => {
+            Joker::Joker | Joker::AbstractJoker => {
                 true
             }
-            Joker::JollyJoker => {
-                let groups = HandValue::group_by_rank(&data.cards_impl);
-                let mut counts: Vec<usize> = groups.values().map(|v| v.len()).collect();
-                counts.sort();
-
-                if counts.last() == Some(&5)|| counts.last() == Some(&4) || counts.last() == Some(&3) || counts.last() == Some(&2) {
+            Joker::JollyJoker | Joker::SlyJoker => {
+                if data.counts.last() == Some(&5)|| data.counts.last() == Some(&4) || data.counts.last() == Some(&3) || data.counts.last() == Some(&2) {
                     true
                 } else {
                     false
                 }
             }
-            Joker::ZanyJoker => {
-                let groups = HandValue::group_by_rank(&data.cards_impl);
-                let mut counts: Vec<usize> = groups.values().map(|v| v.len()).collect();
-                counts.sort();
-
-                if counts.last() == Some(&5)|| counts.last() == Some(&4) || counts.last() == Some(&3) {
+            Joker::ZanyJoker | Joker::WilyJoker => {
+                if data.counts.last() == Some(&5)|| data.counts.last() == Some(&4) || data.counts.last() == Some(&3) {
                     true
                 } else {
                     false
                 }
             }
-            Joker::MadJoker => {
-                let groups = HandValue::group_by_rank(&data.cards_impl);
-                let mut counts: Vec<usize> = groups.values().map(|v| v.len()).collect();
-                counts.sort();
-
-                if counts == vec![2, 2] || counts == vec![1, 2, 2] {
+            Joker::MadJoker | Joker::CleverJoker => {
+                if data.counts == vec![2, 2] || data.counts == vec![1, 2, 2] {
                     true
                 } else {
                     false
                 }
             }
-            Joker::CrazyJoker => {
+            Joker::CrazyJoker | Joker::DeviousJoker => {
                 if data.hand == PokerHand::Straight || data.hand == PokerHand::StraightFlush {
                     true
                 } else {
                     false
                 }
             }
-            Joker::DrollJoker => {
-                if data.hand == PokerHand::Flush || data.hand == PokerHand::FlushFive || data.hand == PokerHand::FlushHouse {
+            Joker::DrollJoker | Joker::CraftyJoker => {
+                let groups = HandValue::is_flush(&data.cards_impl);
+                if groups {
                     true
                 } else {
                     false
                 }
-            }
-            Joker::SlyJoker => {
-                let groups = HandValue::group_by_rank(&data.cards_impl);
-                let mut counts: Vec<usize> = groups.values().map(|v| v.len()).collect();
-                counts.sort();
-
-                if counts.last() == Some(&5)|| counts.last() == Some(&4) || counts.last() == Some(&3) || counts.last() == Some(&2) {
-                    true
-                } else {
-                    false
-                }
-            }
-            Joker::WilyJoker => {
-                let groups = HandValue::group_by_rank(&data.cards_impl);
-                let mut counts: Vec<usize> = groups.values().map(|v| v.len()).collect();
-                counts.sort();
-
-                if counts.last() == Some(&5)|| counts.last() == Some(&4) || counts.last() == Some(&3) {
-                    true
-                } else {
-                    false
-                }
-            }
-            Joker::CleverJoker => {
-                let groups = HandValue::group_by_rank(&data.cards_impl);
-                let mut counts: Vec<usize> = groups.values().map(|v| v.len()).collect();
-                counts.sort();
-
-                if counts == vec![2, 2] || counts == vec![1, 2, 2] {
-                    true
-                } else {
-                    false
-                }
-            }
-            Joker::DeviousJoker => {
-                if data.hand == PokerHand::Straight || data.hand == PokerHand::StraightFlush {
-                    true
-                } else {
-                    false
-                }
-            }
-            Joker::CraftyJoker => {
-                if data.hand == PokerHand::Flush || data.hand == PokerHand::FlushFive || data.hand == PokerHand::FlushHouse {
-                    true
-                } else {
-                    false
-                }
-            }
-            Joker::AbstractJoker => {
-                true
             }
             _ => {
                 false
