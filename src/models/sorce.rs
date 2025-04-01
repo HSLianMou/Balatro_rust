@@ -51,6 +51,16 @@ impl Sorce {
                 }
             }
         }
+        for hold_card in &hand.cards_hold_in_hand {
+            if let Some(enhancement) = hold_card.enhancement {
+                match enhancement {
+                    Enhancement::Steel => {
+                        mult *= 1.5;
+                    }
+                    _ => {}
+                }
+            }
+        }
         Self {
             card_chips,
             total_chips,

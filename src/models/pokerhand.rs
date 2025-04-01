@@ -1,4 +1,4 @@
-use ortalib::{Card, PokerHand, Rank};
+use ortalib::{Card, Enhancement, PokerHand, Rank};
 use std::collections::{HashMap, HashSet};
 use std::vec;
 
@@ -6,10 +6,11 @@ use std::vec;
 pub struct HandValue {
     pub hand: PokerHand,
     pub cards_impl: Vec<Card>,
+    pub cards_hold_in_hand: Vec<Card>,
 }
 
 impl HandValue {
-    pub fn evaluation(cards: &[Card]) -> Self {
+    pub fn evaluation(cards: &[Card], hold_cards: &[Card]) -> Self {
         let check: Vec<fn(&[Card]) -> Option<Self>> = vec![
             Self::check_flush_five,
             Self::check_flush_house,
@@ -24,19 +25,35 @@ impl HandValue {
             Self::check_pair,
         ];
 
-        for checkcard in check {
-            if let Some(eval) = checkcard(cards) {
+        for checkcard in &check {
+            if let Some(mut eval) = checkcard(cards) {
+                eval.cards_hold_in_hand = hold_cards.to_vec();
                 return eval;
             }
         }
 
-        Self::check_high_card(cards).unwrap()
+        let mut default_eval = Self::check_high_card(cards).unwrap();
+        default_eval.cards_hold_in_hand = hold_cards.to_vec();
+        default_eval
     }
 
     fn is_flush(cards: &[Card]) -> bool {
-        cards.len() == 5 && {
+        // cards.len() == 5 && {
+        //     let base_suit = cards[0].suit;
+        //     cards.iter().all(|c| c.suit == base_suit)
+        // }
+        let (normal_card, wild_card): (Vec<&Card>, Vec<&Card>) = cards
+        .iter()
+        .partition(|c| !matches!(c.enhancement, Some(Enhancement::Wild)));
+        if wild_card.is_empty() {
             let base_suit = cards[0].suit;
-            cards.iter().all(|c| c.suit == base_suit)
+            cards.iter().all(|c| c.suit == base_suit);
+        }
+        if let Some(first_normal) = normal_card.first() {
+            let base_suit = first_normal.suit;
+            normal_card.iter().all(|c| c.suit == base_suit)
+        } else {
+            false
         }
     }
 
@@ -97,6 +114,7 @@ impl HandValue {
             Some(Self {
                 hand: PokerHand::FlushFive,
                 cards_impl: cards.to_vec(),
+                cards_hold_in_hand: Vec::new(),
             })
         } else {
             None
@@ -113,6 +131,7 @@ impl HandValue {
                 return Some(Self {
                     hand: PokerHand::FlushHouse,
                     cards_impl: cards.to_vec(),
+                    cards_hold_in_hand: Vec::new(),
                 });
             } else {
                 return None;
@@ -130,6 +149,7 @@ impl HandValue {
             Some(Self {
                 hand: PokerHand::FiveOfAKind,
                 cards_impl: cards.to_vec(),
+                cards_hold_in_hand: Vec::new(),
             })
         } else {
             None
@@ -141,6 +161,7 @@ impl HandValue {
             Some(Self {
                 hand: PokerHand::StraightFlush,
                 cards_impl: cards.to_vec(),
+                cards_hold_in_hand: Vec::new(),
             })
         } else {
             None
@@ -166,6 +187,7 @@ impl HandValue {
             Some(Self {
                 hand: PokerHand::FourOfAKind,
                 cards_impl: four_cards,
+                cards_hold_in_hand: Vec::new(),
             })
         } else {
             None
@@ -184,6 +206,7 @@ impl HandValue {
             Some(Self {
                 hand: PokerHand::FullHouse,
                 cards_impl: cards.to_vec(),
+                cards_hold_in_hand: Vec::new(),
             })
         } else {
             None
@@ -195,6 +218,7 @@ impl HandValue {
             Some(Self {
                 hand: PokerHand::Flush,
                 cards_impl: cards.to_vec(),
+                cards_hold_in_hand: Vec::new(),
             })
         } else {
             None
@@ -206,6 +230,7 @@ impl HandValue {
             Some(Self {
                 hand: PokerHand::Straight,
                 cards_impl: cards.to_vec(),
+                cards_hold_in_hand: Vec::new(),
             })
         } else {
             None
@@ -231,6 +256,7 @@ impl HandValue {
             Some(Self {
                 hand: PokerHand::ThreeOfAKind,
                 cards_impl: three_cards,
+                cards_hold_in_hand: Vec::new(),
             })
         } else {
             None
@@ -256,6 +282,7 @@ impl HandValue {
             Some(Self {
                 hand: PokerHand::TwoPair,
                 cards_impl: two_pairs,
+                cards_hold_in_hand: Vec::new(),
             })
         } else {
             None
@@ -281,6 +308,7 @@ impl HandValue {
             Some(Self {
                 hand: PokerHand::Pair,
                 cards_impl: pair,
+                cards_hold_in_hand: Vec::new(),
             })
         } else {
             None
@@ -297,6 +325,7 @@ impl HandValue {
             Some(Self {
                 hand: PokerHand::HighCard,
                 cards_impl: vec![max_card],
+                cards_hold_in_hand: Vec::new(),
             })
         } else {
             None
