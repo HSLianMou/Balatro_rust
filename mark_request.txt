@@ -6,10 +6,10 @@ Please mark stages that are complete with an [X].
 Stages that are partially complete should be marked with a [?].
 Stages that are not complete should be left blank (like [ ]).
 
-> [ ] Stage 1 (Basic Scoring)
-> [ ] Stage 2 (Modifiers)
-> [ ] Stage 3 (Easy Jokers)
-> [ ] Stage 4 (Medium Jokers)
+> [X] Stage 1 (Basic Scoring)
+> [X] Stage 2 (Modifiers)
+> [X] Stage 3 (Easy Jokers)
+> [X] Stage 4 (Medium Jokers)
 > [ ] Stage 5 (Hard Jokers)
 
 ## Design Excellence
@@ -25,8 +25,13 @@ influenced by this challenge, with specific reference to sections of your code.
 If you completed the "Pull Request" design excellence, please just leave a link
 to your PR.
 
->
->
+>When design the joker like JollyJoker etc which need to have pair or Straight that will work to add the mult and chips, 
+I use a Vec named work_joker_cards_in_hand, and then I forget some joker will not use but have edition, 
+the foil, holographic and polychrome also need to be calculate, that cause me so confuse when autotest the stage03
+
+>When design the Baron Joker, I faced the mult*1.5 will be work after calculate all other joker cards, 
+however, the Baron should be calculate first, after you finish the card played's calculate, 
+Baron will be the priority, then the other jokers should start to calculate.
 >
 
 ## Design Limitations

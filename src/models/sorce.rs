@@ -152,8 +152,6 @@ impl Sorce {
                         .filter(|c| c.rank == Rank::King)
                         .count() as f64;
                     if counts != 0.0 {
-                        println!("K number in hand :{:?}",counts);
-                        println!("mult before counting Baron: {:?}", mult);
                         mult *= 1.5f64.powi(counts as i32);
                     }
                 }
@@ -176,7 +174,6 @@ impl Sorce {
                 Joker::DeviousJoker => total_chips += 100.0,
                 Joker::CraftyJoker => total_chips += 80.0,
                 Joker::AbstractJoker => {
-                    println!("joker:number: {:?}", hand.total_joker_number);
                     mult += 3.0 * (hand.total_joker_number as f64);
                 },
                 Joker::RaisedFist => {
