@@ -132,7 +132,6 @@ impl Sorce {
                 }
             }
         }
-        // photograph_trigger = true;
 
         for hold_card in &hand.cards_hold_in_hand {
             if let Some(enhancement) = hold_card.enhancement {
@@ -142,6 +141,23 @@ impl Sorce {
                     }
                     _ => {}
                 }
+            }
+        }
+        for joker_card in &hand.work_joker_cards_in_hand {
+            match joker_card.joker {
+                Joker::Baron => {
+                    let counts = hand
+                        .cards_hold_in_hand
+                        .iter()
+                        .filter(|c| c.rank == Rank::King)
+                        .count() as f64;
+                    if counts != 0.0 {
+                        println!("K number in hand :{:?}",counts);
+                        println!("mult before counting Baron: {:?}", mult);
+                        mult *= 1.5f64.powi(counts as i32);
+                    }
+                }
+                _ => {}
             }
         }
         for joker_card in &hand.work_joker_cards_in_hand {
@@ -159,7 +175,10 @@ impl Sorce {
                 Joker::CleverJoker => total_chips += 80.0,
                 Joker::DeviousJoker => total_chips += 100.0,
                 Joker::CraftyJoker => total_chips += 80.0,
-                Joker::AbstractJoker => mult += 3.0 * (hand.total_joker_number as f64),
+                Joker::AbstractJoker => {
+                    println!("joker:number: {:?}", hand.total_joker_number);
+                    mult += 3.0 * (hand.total_joker_number as f64);
+                },
                 Joker::RaisedFist => {
                     let len_card_hold_in_hand = hand.cards_hold_in_hand.len();
                     let last_one = hand.cards_hold_in_hand[len_card_hold_in_hand - 1].rank;
@@ -172,16 +191,6 @@ impl Sorce {
                         .all(|c| c.suit == Suit::Clubs || c.suit == Suit::Spades)
                     {
                         mult *= 3.0
-                    }
-                }
-                Joker::Baron => {
-                    let counts = hand
-                        .cards_hold_in_hand
-                        .iter()
-                        .filter(|c| c.rank == Rank::King)
-                        .count() as f64;
-                    if counts != 0.0 {
-                        mult *= 1.5 * counts
                     }
                 }
                 Joker::FlowerPot => {
